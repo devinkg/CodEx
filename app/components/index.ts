@@ -1,1 +1,1 @@
-export { OTPInput } from './OTPInput';
+export { PinCodeDialPad } from './PinCodeDialPad';

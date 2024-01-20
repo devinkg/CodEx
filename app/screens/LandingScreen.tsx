@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 // Custom components
-import {OTPInput} from '../components';
+import {PinCodeDialPad} from '../components';
 
 const LandingScreen = () => {
   return <View style={styles.mainContainer}></View>;
