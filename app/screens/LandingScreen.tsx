@@ -1,10 +1,14 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 // Custom components
-import {PinCodeDialPad} from '../components';
+import { PinCodeDialPad } from '../components';
 
 const LandingScreen = () => {
-  return <View style={styles.mainContainer}></View>;
+  return (
+    <View style={styles.mainContainer}>
+      <PinCodeDialPad />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
