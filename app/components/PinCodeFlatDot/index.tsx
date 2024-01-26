@@ -26,7 +26,7 @@ export const PinCodeFlatDot = ({
         alignItems: 'flex-end',
       }}>
       {[...Array(pinLength).keys()]?.map(i => {
-        const isSelected = !!pinCode[i];
+        const isSelected = pinCode[i] !== undefined && pinCode[i] !== null;
         return (
           <View
             key={i}
