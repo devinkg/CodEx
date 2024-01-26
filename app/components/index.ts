@@ -1,1 +1,1 @@
-export { PinCodeDialPad } from './PinCodeDialPad';
+export { DialPad } from './DialPad';
