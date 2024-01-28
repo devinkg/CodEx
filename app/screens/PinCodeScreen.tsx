@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, SafeAreaView } from 'react-native';
 // Custom components
 import { DialPad, PinInputCurvy } from '../components';
 
@@ -8,10 +8,10 @@ const PinCodeScreen = () => {
   const pinCodeLength = 4;
 
   return (
-    <View style={styles.mainContainer}>
-      <Text>{'PinCode Screen'}</Text>
+    <SafeAreaView style={styles.mainContainer}>
       <PinInputCurvy pinLength={pinCodeLength} ref={pinCodeRef} />
       <DialPad
+        dialPadContainerStyles={styles.dialPadContainer}
         onPress={key => {
           if (key === 'del') {
             pinCodeRef.current.deleteValue();
@@ -20,15 +20,19 @@ const PinCodeScreen = () => {
           }
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  dialPadContainer: {
+    flex: 1,
+    backgroundColor: 'red',
+    alignSelf: 'center',
+    justifyContent: 'flex-end',
   },
 });
 
