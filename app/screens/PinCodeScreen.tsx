@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 // Custom components
-import { DialPad, PinCodeFlatDot } from '../components';
+import { DialPad, PinInputCurvy } from '../components';
 
 const PinCodeScreen = () => {
-  const [pincode, setPincode] = useState<number[]>([]);
+  const pinCodeRef = useRef<any>(null);
   const pinCodeLength = 4;
+
   return (
     <View style={styles.mainContainer}>
       <Text>{'PinCode Screen'}</Text>
-      <PinCodeFlatDot pinLength={4} pinCode={pincode} />
+      <PinInputCurvy pinLength={pinCodeLength} ref={pinCodeRef} />
       <DialPad
         onPress={key => {
           if (key === 'del') {
-            setPincode(prev => prev?.slice(0, prev?.length - 1));
+            pinCodeRef.current.deleteValue();
           } else if (typeof key === 'number') {
-            if (pincode?.length === pinCodeLength) return;
-            setPincode(prev => [...prev, key]);
+            pinCodeRef.current.addValue(key);
           }
         }}
       />
