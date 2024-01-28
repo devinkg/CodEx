@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
   },
   dialPadContainer: {
     flex: 1,
-    backgroundColor: 'red',
     alignSelf: 'center',
     justifyContent: 'flex-end',
   },
