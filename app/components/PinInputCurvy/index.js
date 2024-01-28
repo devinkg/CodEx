@@ -15,7 +15,6 @@ class PinBox extends Component {
     this.overlayAnim = new Animated.Value(0);
     const { size, active, hasValue } = this.props;
     this.activate = this.activate.bind(this);
-    this.testingID = '';
     const sizeO =
       typeof size === 'string' ? parseInt(size.replace('%', ''), 10) : size;
     const heightOverSet = sizeO;
@@ -130,7 +129,7 @@ class PinBox extends Component {
   }
 
   render() {
-    const { value, hasValue, MaxHeight, MaxWidth, testingID } = this.state;
+    const { value, hasValue, MaxHeight, MaxWidth } = this.state;
     return (
       <>
         <View
@@ -165,7 +164,6 @@ class PinBox extends Component {
     );
   }
 }
-
 export class PinInputCurvy extends Component {
   ShakeboxAnim = new Animated.Value(1);
 
