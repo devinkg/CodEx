@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -164,13 +164,22 @@ class PinBox extends Component {
     );
   }
 }
-export class PinInputCurvy extends Component {
-  ShakeboxAnim = new Animated.Value(1);
 
-  boxShake = {
+export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
+  const { pinLength, size, onTap, onPinInputComplete, pinLengthZero } = PinInputCurvyProps;
+  const ShakeboxAnim = new Animated.Value(1);
+
+  let box = [];
+  let BoxRefs = [];
+  const [pinInputStates, setPinInputStates] = useState({
+    input: [],
+    index: 0
+  });
+
+  const boxShake = {
     transform: [
       {
-        translateX: this.ShakeboxAnim.interpolate({
+        translateX: ShakeboxAnim.interpolate({
           inputRange: [0, 1, 2],
           outputRange: [-15, 0, 15],
         }),
@@ -178,30 +187,18 @@ export class PinInputCurvy extends Component {
     ],
   };
 
-  constructor(props) {
-    super(props);
-    this.box = [];
-    const { pinLength, size } = this.props;
-    this.BoxRefs = [];
-    this.state = {
-      input: [],
-      index: 0,
-    };
-    this.addValue = this.addValue.bind(this);
-    for (let j = 0; j < pinLength; j += 1) {
-      const eleRef = React.createRef();
-      this.box.push(<PinBox key={j} size={size || 60} ref={eleRef} />);
-      this.BoxRefs.push(eleRef);
-    }
-
+  for (let j = 0; j < pinLength; j += 1) {
+    const eleRef = React.createRef();
+    box.push(<PinBox key={j} size={size || 60} ref={eleRef} />);
+    BoxRefs.push(eleRef);
   }
 
-  componentDidMount() {
-    const { index } = this.state;
-    this.BoxRefs[index]?.current?.activate();
-  }
+  useEffect(() => {
+    const { index } = pinInputStates;
+    BoxRefs[index]?.current?.activate();
+  }, [pinInputStates?.index]);
 
-  shake = () => {
+  const shake = () => {
     Animated.sequence([
       Animated.timing(this.ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
       Animated.timing(this.ShakeboxAnim, { toValue: 2, duration: 50, useNativeDriver: false }),
@@ -212,85 +209,80 @@ export class PinInputCurvy extends Component {
     ]).start();
   };
 
-  pinInputTap = () => {
-    const { onTap } = this.props;
-    typeof onTap && onTap();
+  const pinInputTap = () => {
+    onTap && onTap();
   };
 
-  addValue(value) {
-    const { index, input } = this.state;
-    if (index + 1 < this.BoxRefs.length) {
-      this.BoxRefs[index]?.current?.setValue(value);
-      this.BoxRefs[index]?.current?.fixValue(
-        this.BoxRefs[index + 1]?.current?.activate,
+  const addValue = (value) => {
+    const { index, input } = pinInputStates;
+    if (index + 1 < BoxRefs.length) {
+      BoxRefs[index]?.current?.setValue(value);
+      BoxRefs[index]?.current?.fixValue(
+        BoxRefs[index + 1]?.current?.activate,
       );
       input.push(value);
-      this.setState({ index: index + 1, input });
-    } else if (index + 1 === this.BoxRefs.length) {
-      this.BoxRefs[index]?.current?.setValue(value);
-      this.BoxRefs[index]?.current?.fixValue();
+      setPinInputStates({ index: index + 1, input });
+    } else if (index + 1 === BoxRefs.length) {
+      BoxRefs[index]?.current?.setValue(value);
+      BoxRefs[index]?.current?.fixValue();
       input.push(value);
-      this.setState({ index: index + 1, input });
+      setPinInputStates({ index: index + 1, input });
     }
-    const { onPinInputComplete } = this.props;
-    index + 1 >= this.BoxRefs.length &&
+
+    index + 1 >= BoxRefs.length &&
       typeof onPinInputComplete === 'function' &&
       onPinInputComplete(input);
   }
 
-  deleteValue() {
-    const { index, input } = this.state;
-    const { pinLengthZero } = this.props;
+  const deleteValue = () => {
+    const { index, input } = pinInputStates;
+
     if (index !== 0) {
       let cIndex = index;
-      index < this.BoxRefs.length || (cIndex = index - 1);
-      this.BoxRefs[cIndex]?.current?.deactivate(() => {
-        this.BoxRefs[index - 1]?.current?.setValueWO('');
-        this.BoxRefs[index - 1]?.current?.removeValue(
-          this.BoxRefs[index - 1]?.current?.activate,
+      index < BoxRefs.length || (cIndex = index - 1);
+      BoxRefs[cIndex]?.current?.deactivate(() => {
+        BoxRefs[index - 1]?.current?.setValueWO('');
+        BoxRefs[index - 1]?.current?.removeValue(
+          BoxRefs[index - 1]?.current?.activate,
         );
       });
       input.pop();
-      this.setState({ index: index - 1, input }, () => {
-        if (pinLengthZero) {
-          if (!this.state.index) {
-            pinLengthZero();
-          }
-        }
-      });
+      setPinInputStates({ index: index - 1, input });
     }
   }
 
-  Clear() {
-    const { index } = this.state;
-    this.BoxRefs.forEach((val, Vindex) => {
-      if (Vindex < this.BoxRefs.length - 1) {
+  const clearValues = () => {
+    const { index } = pinInputStates;
+    BoxRefs.forEach((val, Vindex) => {
+      if (Vindex < BoxRefs.length - 1) {
         val?.current?.deactivate(() => {
-          this.BoxRefs[index - 1 - Vindex]?.current?.setValueWO('');
-          this.BoxRefs[index - 1 - Vindex]?.current?.removeValue();
+          BoxRefs[index - 1 - Vindex]?.current?.setValueWO('');
+          BoxRefs[index - 1 - Vindex]?.current?.removeValue();
         });
       } else {
-        this.BoxRefs[index - 1 - Vindex]?.current?.setValueWO('');
-        this.BoxRefs[index - 1 - Vindex]?.current?.removeValue();
-        this.BoxRefs[index - 1 - Vindex]?.current?.activate();
+        BoxRefs[index - 1 - Vindex]?.current?.setValueWO('');
+        BoxRefs[index - 1 - Vindex]?.current?.removeValue();
+        BoxRefs[index - 1 - Vindex]?.current?.activate();
       }
     });
-    this.setState({ index: 0, input: [] });
+    setPinInputStates({ index: 0, input: [] });
   }
 
-  render() {
-    return (
-      <>
-        <TouchableWithoutFeedback onPress={this.pinInputTap}>
-          <Animated.View
-            style={[PinInputStyles.PinsBoxContainer, this.boxShake]} >
-            {this.box}
-          </Animated.View>
-        </TouchableWithoutFeedback>
-      </>
-    );
-  }
-}
+  useImperativeHandle(forwardingRef, () => {
+    return { shake, addValue, deleteValue, clearValues }
+  })
+
+  return (
+    <>
+      <TouchableWithoutFeedback onPress={pinInputTap}>
+        <Animated.View
+          style={[PinInputStyles.PinsBoxContainer, boxShake]} >
+          {box}
+        </Animated.View>
+      </TouchableWithoutFeedback>
+    </>
+  );
+});
 
 const PinInputStyles = StyleSheet.create({
   PinBoxContainer: {
