@@ -1,4 +1,4 @@
-import React, { Component, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { Component, createRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -6,61 +6,60 @@ import {
   Easing,
   Animated,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 
-class PinBox extends Component {
-  constructor(props) {
-    super(props);
-    this.checkboxAnim = new Animated.Value(0);
-    this.overlayAnim = new Animated.Value(0);
-    const { size, active, hasValue } = this.props;
-    this.activate = this.activate.bind(this);
-    const sizeO =
-      typeof size === 'string' ? parseInt(size.replace('%', ''), 10) : size;
-    const heightOverSet = sizeO;
+const PinBox = forwardRef((PinBoxProps, forwardingRef) => {
+  const { size, active, hasValue } = PinBoxProps;
 
-    this.state = {
-      active: !!active,
-      hasValue: !!hasValue,
-      MaxHeight: sizeO + heightOverSet,
-      MaxWidth: sizeO,
-      value: '',
-    };
+  const checkboxAnim = new Animated.Value(0);
+  const overlayAnim = new Animated.Value(0);
+  const sizeO =
+    typeof size === 'string' ? parseInt(size.replace('%', ''), 10) : size;
+  const heightOverSet = sizeO;
 
-    this.boxStyles = {
-      height: this.checkboxAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [sizeO, sizeO + heightOverSet],
-      }),
-      width: sizeO,
-    };
-    this.boxOverlayStyles = {
-      height: this.overlayAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0%', '100%'],
-      }),
-      width: this.overlayAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0%', '100%'],
-      }),
-    };
-  }
+  const [pinBoxStates, setPinBoxStates] = useState({
+    active: !!active,
+    hasValue: !!hasValue,
+    MaxHeight: sizeO + heightOverSet,
+    MaxWidth: sizeO,
+    value: '',
+  });
 
-  componentDidMount() {
-    const { active } = this.state;
+  const boxStyles = {
+    height: checkboxAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [sizeO, sizeO + heightOverSet],
+    }),
+    width: sizeO,
+  };
+
+  const boxOverlayStyles = {
+    height: overlayAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0%', '100%'],
+    }),
+    width: overlayAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0%', '100%'],
+    }),
+  };
+
+  useEffect(() => {
+    const { active } = pinBoxStates;
     if (active) {
-      Animated.timing(this.checkboxAnim, {
+      Animated.timing(checkboxAnim, {
         toValue: 1,
         duration: 50,
         easing: Easing.cubic,
-        useNativeDriver: false
+        useNativeDriver: false,
       }).start();
     }
-  }
+  }, [checkboxAnim, pinBoxStates]);
 
-  setValue(value = 0) {
-    this.setState({ value });
-    Animated.timing(this.checkboxAnim, {
+  const setValue = (value = 0) => {
+    setPinBoxStates((prevState) => ({ ...prevState, value }));
+    Animated.timing(checkboxAnim, {
       toValue: 0,
       duration: 25,
       easing: Easing.cubic,
@@ -68,13 +67,13 @@ class PinBox extends Component {
     }).start();
   }
 
-  setValueWO(value) {
-    this.setState({ value });
+  const setValueWO = (value) => {
+    setPinBoxStates((prevState) => ({ ...prevState, value }));
   }
 
-  activate() {
-    this.setState({ active: true });
-    Animated.timing(this.checkboxAnim, {
+  const activate = () => {
+    setPinBoxStates((prevState) => ({ ...prevState, active: true }));
+    Animated.timing(checkboxAnim, {
       toValue: 1,
       duration: 50,
       easing: Easing.cubic,
@@ -82,9 +81,9 @@ class PinBox extends Component {
     }).start();
   }
 
-  deactivate(callBack = undefined) {
-    this.setState({ active: false });
-    Animated.timing(this.checkboxAnim, {
+  const deactivate = (callBack = undefined) => {
+    setPinBoxStates((prevState) => ({ ...prevState, active: false }));
+    Animated.timing(checkboxAnim, {
       toValue: 0,
       duration: 50,
       easing: Easing.cubic,
@@ -92,9 +91,9 @@ class PinBox extends Component {
     }).start(callBack);
   }
 
-  deactivateWO(callBack = undefined) {
-    this.setState({ active: false });
-    Animated.timing(this.checkboxAnim, {
+  const deactivateWO = (callBack = undefined) => {
+    setPinBoxStates((prevState) => ({ ...prevState, active: false }));
+    Animated.timing(checkboxAnim, {
       toValue: 0,
       duration: 5,
       easing: Easing.cubic,
@@ -102,10 +101,10 @@ class PinBox extends Component {
     }).start(callBack);
   }
 
-  removeValue(callBack = undefined) {
-    this.setState({ hasValue: false });
+  const removeValue = (callBack = undefined) => {
+    setPinBoxStates((prevState) => ({ ...prevState, hasValue: false }));
     setTimeout(() => {
-      Animated.timing(this.overlayAnim, {
+      Animated.timing(overlayAnim, {
         toValue: 0,
         duration: 50,
         easing: Easing.cubic,
@@ -115,10 +114,10 @@ class PinBox extends Component {
     typeof callBack === 'function' && callBack();
   }
 
-  fixValue(callBack = undefined) {
-    this.setState({ hasValue: true });
+  const fixValue = (callBack = undefined) => {
+    setPinBoxStates((prevState) => ({ ...prevState, hasValue: true }));
     setTimeout(() => {
-      Animated.timing(this.overlayAnim, {
+      Animated.timing(overlayAnim, {
         toValue: 1,
         duration: 50,
         easing: Easing.cubic,
@@ -128,49 +127,55 @@ class PinBox extends Component {
     typeof callBack === 'function' && callBack();
   }
 
-  render() {
-    const { value, hasValue, MaxHeight, MaxWidth } = this.state;
-    return (
-      <>
-        <View
+  useImperativeHandle(forwardingRef, () => {
+    return { setValue, setValueWO, activate, deactivate, deactivateWO, removeValue, fixValue }
+  })
+
+  const { value, MaxHeight, MaxWidth } = pinBoxStates;
+
+  return (
+    <>
+      <View
+        style={[
+          PinInputStyles.PinBoxContainer,
+          { height: MaxHeight, width: MaxWidth },
+        ]}>
+        <Animated.View
           style={[
-            PinInputStyles.PinBoxContainer,
-            { height: MaxHeight, width: MaxWidth },
-          ]}>
-          <Animated.View
-            style={[
-              this.boxStyles,
-              PinInputStyles.PinBox,
-              PinInputStyles.inputShadow,
-            ]}
-          >
-            {hasValue && (
-              <Animated.View
-                style={[this.boxOverlayStyles, PinInputStyles.PinBoxOverlay]}>
-                <View
-                  style={[
-                    PinInputStyles.overlayDot,
-                    PinInputStyles.inputShadow,
-                  ]}
-                />
-              </Animated.View>
-            )}
-            <Text style={[{ fontWeight: 'bold', fontSize: 17 }]}>
-              {value}
-            </Text>
-          </Animated.View>
-        </View>
-      </>
-    );
-  }
-}
+            boxStyles,
+            PinInputStyles.PinBox,
+            PinInputStyles.inputShadow,
+          ]}
+        >
+          {pinBoxStates.hasValue && (
+            <Animated.View
+              style={[boxOverlayStyles, PinInputStyles.PinBoxOverlay]}>
+              <View
+                style={[
+                  PinInputStyles.overlayDot,
+                  PinInputStyles.inputShadow,
+                ]}
+              />
+            </Animated.View>
+          )}
+          <Text style={[{ fontWeight: 'bold', fontSize: 17 }]}>
+            {value}
+          </Text>
+        </Animated.View>
+        <Text>{value}</Text>
+        <Text>{JSON.stringify(pinBoxStates.hasValue)}</Text>
+      </View>
+    </>
+  );
+
+});
 
 export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
   const { pinLength, size, onTap, onPinInputComplete, pinLengthZero } = PinInputCurvyProps;
   const ShakeboxAnim = new Animated.Value(1);
 
-  let box = [];
-  let BoxRefs = [];
+  const BoxRefs = [];
+
   const [pinInputStates, setPinInputStates] = useState({
     input: [],
     index: 0
@@ -187,12 +192,6 @@ export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
     ],
   };
 
-  for (let j = 0; j < pinLength; j += 1) {
-    const eleRef = React.createRef();
-    box.push(<PinBox key={j} size={size || 60} ref={eleRef} />);
-    BoxRefs.push(eleRef);
-  }
-
   useEffect(() => {
     const { index } = pinInputStates;
     BoxRefs[index]?.current?.activate();
@@ -200,12 +199,12 @@ export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
 
   const shake = () => {
     Animated.sequence([
-      Animated.timing(this.ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
-      Animated.timing(this.ShakeboxAnim, { toValue: 2, duration: 50, useNativeDriver: false }),
-      Animated.timing(this.ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
-      Animated.timing(this.ShakeboxAnim, { toValue: 2, duration: 50, useNativeDriver: false }),
-      Animated.timing(this.ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
-      Animated.timing(this.ShakeboxAnim, { toValue: 1, duration: 50, useNativeDriver: false }),
+      Animated.timing(ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
+      Animated.timing(ShakeboxAnim, { toValue: 2, duration: 50, useNativeDriver: false }),
+      Animated.timing(ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
+      Animated.timing(ShakeboxAnim, { toValue: 2, duration: 50, useNativeDriver: false }),
+      Animated.timing(ShakeboxAnim, { toValue: 0, duration: 50, useNativeDriver: false }),
+      Animated.timing(ShakeboxAnim, { toValue: 1, duration: 50, useNativeDriver: false }),
     ]).start();
   };
 
@@ -216,36 +215,44 @@ export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
   const addValue = (value) => {
     const { index, input } = pinInputStates;
     if (index + 1 < BoxRefs.length) {
-      BoxRefs[index]?.current?.setValue(value);
-      BoxRefs[index]?.current?.fixValue(
-        BoxRefs[index + 1]?.current?.activate,
-      );
+      const currentBox = BoxRefs[index]?.current;
+      const nextBox = BoxRefs[index + 1]?.current;
+
+      currentBox?.setValue(value);
+      currentBox?.fixValue(nextBox?.activate);
+
       input.push(value);
       setPinInputStates({ index: index + 1, input });
     } else if (index + 1 === BoxRefs.length) {
-      BoxRefs[index]?.current?.setValue(value);
-      BoxRefs[index]?.current?.fixValue();
+      const currentBox = BoxRefs[index]?.current;
+
+      currentBox?.setValue(value);
+      currentBox?.fixValue();
+
       input.push(value);
       setPinInputStates({ index: index + 1, input });
     }
 
-    index + 1 >= BoxRefs.length &&
-      typeof onPinInputComplete === 'function' &&
+    if (index + 1 >= BoxRefs.length && typeof onPinInputComplete === 'function') {
       onPinInputComplete(input);
+    }
+
   }
 
   const deleteValue = () => {
     const { index, input } = pinInputStates;
 
     if (index !== 0) {
-      let cIndex = index;
-      index < BoxRefs.length || (cIndex = index - 1);
-      BoxRefs[cIndex]?.current?.deactivate(() => {
-        BoxRefs[index - 1]?.current?.setValueWO('');
-        BoxRefs[index - 1]?.current?.removeValue(
-          BoxRefs[index - 1]?.current?.activate,
-        );
+      let cIndex = index < BoxRefs.length ? index : index - 1;
+
+      const currentBoxRef = BoxRefs[cIndex]?.current;
+      const previousBoxRef = BoxRefs[index - 1]?.current;
+
+      currentBoxRef?.deactivate(() => {
+        previousBoxRef?.setValueWO('');
+        previousBoxRef?.removeValue(previousBoxRef?.activate);
       });
+
       input.pop();
       setPinInputStates({ index: index - 1, input });
     }
@@ -253,18 +260,22 @@ export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
 
   const clearValues = () => {
     const { index } = pinInputStates;
+
     BoxRefs.forEach((val, Vindex) => {
+      const currentBoxRef = BoxRefs[index - 1 - Vindex]?.current;
+
       if (Vindex < BoxRefs.length - 1) {
-        val?.current?.deactivate(() => {
-          BoxRefs[index - 1 - Vindex]?.current?.setValueWO('');
-          BoxRefs[index - 1 - Vindex]?.current?.removeValue();
+        currentBoxRef?.deactivate(() => {
+          currentBoxRef.setValueWO('');
+          currentBoxRef.removeValue();
         });
       } else {
-        BoxRefs[index - 1 - Vindex]?.current?.setValueWO('');
-        BoxRefs[index - 1 - Vindex]?.current?.removeValue();
-        BoxRefs[index - 1 - Vindex]?.current?.activate();
+        currentBoxRef?.setValueWO('');
+        currentBoxRef?.removeValue();
+        currentBoxRef?.activate();
       }
     });
+
     setPinInputStates({ index: 0, input: [] });
   }
 
@@ -277,7 +288,11 @@ export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
       <TouchableWithoutFeedback onPress={pinInputTap}>
         <Animated.View
           style={[PinInputStyles.PinsBoxContainer, boxShake]} >
-          {box}
+          {[...Array(pinLength).keys()]?.map(i => {
+            const eleRef = createRef();
+            BoxRefs.push(eleRef);
+            return <PinBox key={i} size={size || 60} ref={eleRef} />;
+          })}
         </Animated.View>
       </TouchableWithoutFeedback>
     </>
