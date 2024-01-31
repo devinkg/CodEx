@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import {
     Text,
     StyleSheet,
@@ -10,8 +10,8 @@ import {
 export const PinCellCurvy = forwardRef((PinBoxProps, forwardingRef) => {
     const { size, active, hasValue } = PinBoxProps;
 
-    const checkboxAnim = new Animated.Value(0);
-    const overlayAnim = new Animated.Value(0);
+    const checkboxAnim = useRef(new Animated.Value(0)).current;
+    const overlayAnim = useRef(new Animated.Value(0)).current;
     const sizeO =
         typeof size === 'string' ? parseInt(size.replace('%', ''), 10) : size;
     const heightOverSet = sizeO;
@@ -57,12 +57,14 @@ export const PinCellCurvy = forwardRef((PinBoxProps, forwardingRef) => {
 
     const setValue = (value = 0) => {
         setPinBoxStates((prevState) => ({ ...prevState, value }));
-        Animated.timing(checkboxAnim, {
-            toValue: 0,
-            duration: 25,
-            easing: Easing.cubic,
-            useNativeDriver: false
-        }).start();
+        setTimeout(() => {
+            Animated.timing(checkboxAnim, {
+                toValue: 0,
+                duration: 25,
+                easing: Easing.cubic,
+                useNativeDriver: false
+            }).start();
+        }, 250);
     }
 
     const setValueWO = (value) => {
