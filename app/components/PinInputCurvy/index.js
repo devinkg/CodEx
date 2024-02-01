@@ -7,9 +7,10 @@ import {
 import { PinCellCurvy } from './PinCellCurvy';
 
 type PinInputCurvyPropsTypes = {
-  pinLength: number,
-  size?: number | string,
-  onTap?: () => {},
+  pinLength: number;
+  size?: number | string;
+  onTap?: () => {};
+  onPinInputComplete: (value: number | string) => void;
 }
 
 export const PinInputCurvy = forwardRef((PinInputCurvyProps: PinInputCurvyPropsTypes, forwardingRef) => {

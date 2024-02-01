@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, Pressable } from 'react-native';
 // Custom components
 import { DialPad, PinInputCurvy } from '../components';
 
@@ -9,7 +9,42 @@ const PinCodeScreen = () => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <PinInputCurvy pinLength={pinCodeLength} ref={pinCodeRef} />
+      <PinInputCurvy
+        pinLength={pinCodeLength}
+        ref={pinCodeRef}
+        onPinInputComplete={(inputValue: string | number) => {
+          console.log(inputValue);
+        }}
+      />
+
+      <View
+        style={{
+          borderWidth: 2,
+          borderRadius: 10,
+          paddingHorizontal: 10,
+          paddingVertical: 12,
+          margin: 20,
+        }}>
+        <Text style={{ color: 'darkgreen', fontSize: 20, marginBottom: 10 }}>
+          Test buttons
+        </Text>
+        <Pressable
+          onPress={() => {
+            pinCodeRef.current.shake();
+          }}>
+          <Text style={{ color: 'darkblue', fontSize: 20, marginBottom: 10 }}>
+            shake
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            pinCodeRef.current.clearValues();
+          }}>
+          <Text style={{ color: 'darkblue', fontSize: 20, marginBottom: 10 }}>
+            clear
+          </Text>
+        </Pressable>
+      </View>
       <DialPad
         dialPadContainerStyles={styles.dialPadContainer}
         onPress={key => {
