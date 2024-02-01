@@ -184,7 +184,7 @@ const PinCellCurvyStyles = StyleSheet.create({
     },
     PinCellOverlay: {
         position: 'absolute',
-        backgroundColor: 'green',
+        backgroundColor: 'cornflowerblue',
         zIndex: 1,
         borderRadius: 500,
         alignItems: 'center',

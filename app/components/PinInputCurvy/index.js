@@ -10,7 +10,7 @@ type PinInputCurvyPropsTypes = {
   pinLength: number;
   size?: number | string;
   onTap?: () => {};
-  onPinInputComplete: (value: number | string) => void;
+  onPinInputComplete?: (value: [number | string]) => void;
 }
 
 export const PinInputCurvy = forwardRef((PinInputCurvyProps: PinInputCurvyPropsTypes, forwardingRef) => {

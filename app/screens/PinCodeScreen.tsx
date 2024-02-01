@@ -12,11 +12,10 @@ const PinCodeScreen = () => {
       <PinInputCurvy
         pinLength={pinCodeLength}
         ref={pinCodeRef}
-        onPinInputComplete={(inputValue: string | number) => {
+        onPinInputComplete={(inputValue: [string | number]) => {
           console.log(inputValue);
         }}
       />
-
       <View
         style={{
           borderWidth: 2,
@@ -24,15 +23,17 @@ const PinCodeScreen = () => {
           paddingHorizontal: 10,
           paddingVertical: 12,
           margin: 20,
+          borderColor: 'darkslategrey',
         }}>
-        <Text style={{ color: 'darkgreen', fontSize: 20, marginBottom: 10 }}>
+        <Text style={{ color: 'dodgerblue', fontSize: 20, marginBottom: 10 }}>
           Test buttons
         </Text>
         <Pressable
           onPress={() => {
             pinCodeRef.current.shake();
           }}>
-          <Text style={{ color: 'darkblue', fontSize: 20, marginBottom: 10 }}>
+          <Text
+            style={{ color: 'darkslategrey', fontSize: 20, marginBottom: 10 }}>
             shake
           </Text>
         </Pressable>
@@ -40,7 +41,8 @@ const PinCodeScreen = () => {
           onPress={() => {
             pinCodeRef.current.clearValues();
           }}>
-          <Text style={{ color: 'darkblue', fontSize: 20, marginBottom: 10 }}>
+          <Text
+            style={{ color: 'darkslategrey', fontSize: 20, marginBottom: 10 }}>
             clear
           </Text>
         </Pressable>
