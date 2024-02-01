@@ -6,8 +6,14 @@ import {
 } from 'react-native';
 import { PinCellCurvy } from './PinCellCurvy';
 
-export const PinInputCurvy = forwardRef((PinInputCurvyProps, forwardingRef) => {
-  const { pinLength, size, onTap, onPinInputComplete, pinLengthZero } = PinInputCurvyProps;
+type PinInputCurvyPropsTypes = {
+  pinLength: number,
+  size?: number | string,
+  onTap?: () => {},
+}
+
+export const PinInputCurvy = forwardRef((PinInputCurvyProps: PinInputCurvyPropsTypes, forwardingRef) => {
+  const { pinLength, size, onTap, onPinInputComplete } = PinInputCurvyProps;
   const ShakeboxAnim = new Animated.Value(1);
 
   const BoxRefs = [];
