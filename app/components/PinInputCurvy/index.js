@@ -1,12 +1,8 @@
-import React, { Component, createRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { createRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import {
-  Text,
   StyleSheet,
-  View,
-  Easing,
   Animated,
   TouchableWithoutFeedback,
-  Alert,
 } from 'react-native';
 import { PinCellCurvy } from './PinCellCurvy';
 
