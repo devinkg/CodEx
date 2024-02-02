@@ -50,10 +50,16 @@ export const DialPad = ({
                   alignItems: 'center',
                 }}>
                 {item === 'del' ? (
-                  <Text style={{ fontSize: dialPadSizeFontSize }}>{item}</Text>
+                  <Text
+                    style={{ fontSize: dialPadSizeFontSize, color: 'black' }}>
+                    {item}
+                  </Text>
                 ) : (
                   // TODO need to change this to the icon using icon lib
-                  <Text style={{ fontSize: dialPadSizeFontSize }}>{item}</Text>
+                  <Text
+                    style={{ fontSize: dialPadSizeFontSize, color: 'black' }}>
+                    {item}
+                  </Text>
                 )}
               </View>
             </TouchableOpacity>
