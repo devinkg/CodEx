@@ -64,6 +64,7 @@ const PinCodeScreen = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: 'white',
   },
   dialPadContainer: {
     flex: 1,
